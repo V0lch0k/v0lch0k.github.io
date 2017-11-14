@@ -5,11 +5,11 @@ categories:
 - Windows
 ---
 
-Today's issue concerns us with a series of event id's that flood the security event log under normal operating conditions.
+Today's issue concerns us with a series of event ids that flood the security event log under normal operating conditions.
 
-When an environment relies on a number of machines in constant communication with each other, every inbound and outbound connection for every service will be logged as Security Events resulting in the logs being flooded with these events. When you have a log limit of 20 MB, the log will fill up quickly and attempting to find a specific issue from the history of these logs become impossible as the logs will quickly become overwritten. The choice become, either limit the logging of certain events or raise the size limit of the logs... or both.
+When an environment relies on a number of machines in constant communication with each other, every inbound and outbound connection for every service will be logged as Security Events, resulting in the logs being flooded with these events. When you have a log limit of 20 MB, the log will fill up quickly and attempting to find a specific issue from the history of these logs becomes impossible, as the logs will quickly become overwritten. The choice becomes, either limit the logging of certain events or raise the size limit of the logs... or both.
 
- Certain event IDs are major culprits, the top four that I've recently had some trouble with are:
+ Certain event IDs are major culprits when it comes to logging, the top four that I've recently had some trouble with are:
  
  `5156`: The Windows Filtering Platform has allowed a connection.
  
