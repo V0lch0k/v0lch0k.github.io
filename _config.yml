@@ -15,7 +15,7 @@ title:               Vølchøk
 tagline:             'Notes'
 description:         'Nonsense Notes'
 url:                 https://v0lch0k.github.io/
-baseurl:             https://v0lch0k.github.io/
+baseurl:             
 paginate:            7
 
 # About/contact
