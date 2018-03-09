@@ -9,10 +9,12 @@ categories:
 > 
 >―-Cheshire Cat, American McGee's Alice 
 
+
 This was the first machine I've attempted to pop, the first real exercise in this field. Here I will describe the step I took to get both the `user` and `root` flags for this machine. Following my fumblings, I will detail how I should have proceeded to gain user and root access.
 
+##How I Did It
  
-## User
+### User
 
 It took me far too long to get the user flag. My first step was to use `nmap` to scan the IP of the target machine. This gave me a nice output imforming me that port 80 and was open and showed the supported HTTP methods.
 
@@ -39,7 +41,7 @@ A friend of mine who was also working on the machine at the time gave me a hint 
  
  Inside this directory `phpbash.php` was already pre-loaded. Executing it gave me user (`www-data-`) access to the machine. From there it was easy to navigate to the `www-data@bashed:/home/arrexel/user.txt` file and obtain the `user` flag.
  
- ## Root
+### Root
  
  It took me about a week of on and off poking around to get the root flag, and even when I did I went in a round about way to finally get it. At first I wasn't sure how to proceed, Exploring the machine via the web client I noticed that there is a `root` folder that I did not have access to. My first assumption was that just like the `user` flag was in `user.txt` the `root` flag must be in a `root.txt` file. 
  
@@ -59,15 +61,15 @@ A friend of mine who was also working on the machine at the time gave me a hint 
  
  It was in my search for answers that I came across the [Info Security Geek](https://infosecuritygeek.com ) writeup for this this machine. The write up was password protected, luckily for me the password was the `root` flag from the machine. The following will be pretty much me paraphrasing the write up for Info Security Geek.
  
- ## The Correct Methodology 
+## The Correct Methodology 
  
  Thank you to the guys at Info Security Geek for this.
  
- ### Procedure
+### Procedure
  
- 1. Start of by using Nmap to scan the IP
+**1.** Start of by using Nmap to scan the IP
  
- ```
+```
  
  Starting Nmap 7.60 ( https://nmap.org ) at 2018-03-07 13:27 AEDT
 Nmap scan report for 10.10.10.68
@@ -79,11 +81,11 @@ PORT   STATE SERVICE VERSION
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 32.10 seconds
  
- ```
+```
  
-You can see from the results that Port 80 is open and the web server uses Apache httpd 2.4.18
+ You can see from the results that Port 80 is open and the web server      uses Apache httpd 2.4.18
   
-  2. Since port 80 is open we can perform an HTTP enumeration using Nmaps built in scripts
+**2.** Since port 80 is open we can perform an HTTP enumeration using Nmaps built in scripts
   
 ```
 root@Vindicare:~$ nmap -Pn -p 80 --script http-enum 10.10.10.68
@@ -110,18 +112,42 @@ This could also be achieved via brute-force using DIRB
 
 ```
 
-To DO
+root@Vindicare:~$ dirb http://10.10.10.68
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+START_TIME: Wed Mar  7 13:45:40 2018
+URL_BASE: http://10.10.10.68/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+
+-----------------
+
+GENERATED WORDS: 4612                                                          
+
+---- Scanning URL: http://10.10.10.68/ ----
+==> DIRECTORY: http://10.10.10.68/css/                                         
+==> DIRECTORY: http://10.10.10.68/dev/                                         
+==> DIRECTORY: http://10.10.10.68/fonts/                                       
+==> DIRECTORY: http://10.10.10.68/images/                                      
++ http://10.10.10.68/index.html (CODE:200|SIZE:7743)                           
+==> DIRECTORY: http://10.10.10.68/js/                                          
+==> DIRECTORY: http://10.10.10.68/php/                                         
++ http://10.10.10.68/server-status (CODE:403|SIZE:299)                         
+==> DIRECTORY: http://10.10.10.68/uploads/  
 
 ```
 
-DIRB did take a little longer to scan but both scans did yield the same results
+DIRB did take a little longer to scan but both scans did yield similar results
 
 
-3. Browsing to the site we notice Arrexel's post regarding him developing the phpbash on this server. ( Big Hint)
+**3.** Browsing to the site we notice Arrexel's post regarding him developing the phpbash on this server. ( Big Hint)
 
-4. Looking at the `/dev/` directory reveals the presence of `phpbash.php`. Checking it's functionality it it really works!
+**4.** Looking at the `/dev/` directory reveals the presence of `phpbash.php`. Checking it's functionality it it really works!
 
-5. Let's use the webshell to capture the user flag
+**5.** Let's use the webshell to capture the user flag
 
 ```
 www-data@bashed:/var/www/html/dev# cd /home
@@ -143,7 +169,7 @@ www-data@bashed:/home/arrexel# cat user.txt
 
 ```
 
-6. Let's create a reverse shell using python.
+**6.** Let's create a reverse shell using python.
 
 First we need to create a netcat listener on our Kali machine.
 
