@@ -16,7 +16,7 @@ This was the first machine I've attempted to pop, the first real exercise in thi
  
 ### User
 
-It took me far too long to get the user flag. My first step was to use `nmap` to scan the IP of the target machine. This gave me a nice output imforming me that port 80 and was open and showed the supported HTTP methods.
+It took me far too long to get the user flag. My first step was to use `nmap` to scan the IP of the target machine. This gave me a nice output, imforming me that port 80 and was open and showing the supported HTTP methods.
 
 
 ![Nmap Scan]({{"/images/bashed-nmap-1.png" | https://v0lch0k.github.io/images/bashed-nmap-1.png }})
@@ -33,7 +33,7 @@ I also followed the links on the site to discover the github page for the `phpba
 
 My first reaction was that I need to follow the instructions of the `phpbash`. I need to upload the script to the server and execute to access this remote shell.
 
-I spent a long time following dead ends and attempting to understand the JS functions on the page, trying to find a way to upload this file to the server. Looking at the screenshots of `phpbash` in action I noticed an `uploads` folder. I then spent a little while attempting to upload the `phpbash.php` file to the uploads folder. Everything from post requests to python scripts. Nothing would work. 
+I spent a long time following dead ends and attempting to understand the JS functions on the page, trying to find a way to upload the `phpbash` script to the web server. Looking at the screenshots of `phpbash` in action I noticed an `uploads` folder. I then spent a little while attempting to upload the `phpbash.php` file to the uploads folder. Everything from post requests to python scripts. Nothing would work. 
 
 A friend of mine who was also working on the machine at the time gave me a hint of "The owner of the machine does dev work on it". Even after this hint I was still lost. It finally clicked for me when I looked over the screenshots of `phpbash` in action more closely and realized that there must exist a `/dev` directory on the site.
 
@@ -43,19 +43,19 @@ A friend of mine who was also working on the machine at the time gave me a hint 
  
 ### Root
  
- It took me about a week of on and off poking around to get the root flag, and even when I did I went in a round about way to finally get it. At first I wasn't sure how to proceed, Exploring the machine via the web client I noticed that there is a `root` folder that I did not have access to. My first assumption was that just like the `user` flag was in `user.txt` the `root` flag must be in a `root.txt` file. 
+ It took me about a week of on and off poking around to get the root flag, and even when I did finally get it, I went about it in a round about way. At first I wasn't sure how to proceed, Exploring the machine via the web client I noticed that there is a `root` folder that I did not have access to. My first assumption was that just like the `user` flag was in `user.txt` the `root` flag must be in a `root.txt` file. 
  
  I attempted to run some simple `find . | grep root.txt` commands which did not yield much information. I then decided to try my luck with a reverse shell. After an hour of bumbling around I managed to put together a python script to grant me a reverse shell.
  
- To get the script on the sever I used python's `SimpleHTTPServer` module to host the script on my machine and then using `wget` to download it to the machine through the web client. It wasn't long before I had a reverse shell. However, the reverse shell was still under the `www-data` user, meaning I was not able to do much with it, let alone browse the `root` directory, in which I was certain the flag resided.
+ To get the script on the sever I used python's `SimpleHTTPServer` module to host the script on my machine and then using `wget` to download it to the webserver through the web client. It wasn't long before I had a reverse shell. However, the reverse shell was still under the `www-data` user, meaning I was not able to do much with it, let alone browse the `root` directory, in which I was certain the flag resided.
  
- Doing some research on `privesc` I encountered a Linux enumeration script; `LinEnum.sh`. This proved to be a powerful tool. I quickly uploaded it to the `tmp` folder on the machine and ran the script. The output was a little more than I expected. Examing the several pages of output I was not completely sure what I was looking for. From my research I understood I need to look for something that was unusual or out of the ordinary, but for someone running this for the first time what was ordinary and what wasn't?
+ Doing some research on `privesc` I encountered a Linux enumeration script; `LinEnum.sh`. This proved to be a powerful tool. I quickly uploaded it to the `tmp` folder of the webserver and ran the script. The output was a little more than I expected. Examing the several pages of output I was not completely sure what I was looking for. From my research I understood I needed to look for something that was unusual or out of the ordinary, but for someone running this for the first time what was ordinary and what wasn't?
  
  I had also stumbled across a `privesc` script which I quickly ran on the target machine. Once again I recieved several pages worth of output I wasn't quite sure what to do with. I stared at both the `privesc` and `LinEnum` outputs for several hours trying to find something that could possibly be useful.
  
  I decided to then do some more exploration of the target machine. Exploring the base directory I noticed a `scripts` folder that I also did not have access to as the `www-data` user.  Going back to the `LinEnum` output I had noticed that there was a `scriptmanager` user that did not require a password. 
  
- I attempted to swap users to `scriptmanager` for a good hour. Later to only realise that I could use the `sudo -u scriptmanager <command>` command to execute commands as the `scriptmanager` user. First attempting to gain access to the `root` folder or read the `/root/root.txt` file, then understnading that I now had access to the `scripts` folder via `sudo`. Unfortunately I wasn't sure what to do with this information.
+ I attempted to swap users to `scriptmanager` for a good hour. Later to only realise that I could use the `sudo -u scriptmanager <command>` command to execute commands as the `scriptmanager` user. First attempting to gain access to the `root` folder or read the `/root/root.txt` file, then understanding that I now had access to the `scripts` folder via `sudo`. Unfortunately I wasn't sure what to do with this information.
  
  Not knowing the complete ins and outs of how Linux privelages work I decided to write a python script that would look at the `/root/root.txt` and copy the text to a new file in the directory the script was run from. Having brand new access to the the `scripts` folder I thought I would utilize it to house my script. Using `sudo -u scriptmanager` I downloaded the python script to the `scripts` folder. I then attempted to execute the script from that folder only to be greeted with a `permission denied` warning. Slightly disappointed I looked in the `scripts` folder to now be greeted with a file that contained the `root` flag. Not completely sure how I accomplished this I decided to do some research on why this method worked, why even though i was greeted with a `permission denied` output the script was still able to successfully grant me the root flag.
  
@@ -85,7 +85,7 @@ Nmap done: 1 IP address (1 host up) scanned in 32.10 seconds
  
  You can see from the results that Port 80 is open and the web server      uses Apache httpd 2.4.18
   
-**2.** Since port 80 is open we can perform an HTTP enumeration using Nmaps built in scripts
+**2.** Since port 80 is open we can attempt to enumerate the webdirectories using nmap's HTTP enumeration scripts
   
 ```
 root@Vindicare:~$ nmap -Pn -p 80 --script http-enum 10.10.10.68
@@ -145,7 +145,7 @@ DIRB did take a little longer to scan but both scans did yield similar results
 
 **3.** Browsing to the site we notice Arrexel's post regarding him developing the phpbash on this server. ( Big Hint)
 
-**4.** Looking at the `/dev/` directory reveals the presence of `phpbash.php`. Checking it's functionality it it really works!
+**4.** Looking at the `/dev/` directory reveals the presence of `phpbash.php`. Checking it's functionality to find out it really works!
 
 **5.** Let's use the webshell to capture the user flag
 
