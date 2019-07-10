@@ -230,7 +230,7 @@ ForEach($Disk in $Snaps){
 }
 
 ```
-Next we attach the remaining data disks to the new created virtual machines.
+Next we attach the remaining data disks to the newly created virtual machines.
 
 ```
 Write-Host ('Found ' + $dataDiskCount  + ' data disks') -ForegroundColor Green
@@ -264,7 +264,7 @@ Write-Host ('Found ' + $dataDiskCount  + ' data disks') -ForegroundColor Green
         }
     }
 ```
-#Conclusion
+# Conclusion
 Once this has completed we have an exact copy of the original resource group. This script was specifically catered for a client, only the resources that mattered for the environment where cloned.
 
 For extra resources these scripts can be modified to also clone items such as firewalls, storage accounts etc...
