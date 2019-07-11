@@ -4,7 +4,8 @@ title: Cloning an Environment
 categories:
 - Azure
 ---
-
+>Into the hole again, we hurried along our way, into a once-glorious garden now steeped in dark decay. 
+-Alice
 # Introduction
 
 I've recently come across an interesting issue. When creating a staging environment, or one for testing by clients, the strategy was to go through a lengthy procedure of firstly using ARM templates to deploy the base infrastructure. This was followed by the installation and configuration of a SQL server which itself is a somewhat lengthy process. Then the recovery of SQL database backups (based on which databases were required at the time) and finally the deployment of the current version of the application. This entire process could take up to a week to accomplish based on the size and number of databases required for testing.
