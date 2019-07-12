@@ -73,7 +73,7 @@ As before we need to declare some base variables so that we do not need rewrite 
 ```
 $ResourceGroupName = {Original resource group name}
 $NewResourceGroup = {Name of the new resource group}
-$SubnetPrexi = {Subnet prefix for the resource group}
+$SubnetPrefix = {Subnet prefix for the resource group}
 $StorageType = {Storage type for the managed disks, premium or standard}
 $VnetNameNew = {Name of the new virtual network}
 $Location = {Preferred data center location}
