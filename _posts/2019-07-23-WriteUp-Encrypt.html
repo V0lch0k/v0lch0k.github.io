@@ -5,6 +5,7 @@ categories:
 - Hack The Box
 ---
 
+
 <!doctype html>
 <html class="staticrypt-html">
 <head>
@@ -125,7 +126,8 @@ categories:
     <div class="staticrypt-form">
         <div class="staticrypt-instructions">
             <p class="staticrypt-title">Protected Page</p>
-            <p></p>
+            <p><p>Need root flag for this site</p>
+</p>
         </div>
 
         <hr class="staticrypt-hr">
@@ -6171,7 +6173,7 @@ categories:
         e.preventDefault();
 
         var passphrase = document.getElementById('staticrypt-password').value,
-            encryptedMsg = '5eb6c9f8e77bee66ef8d2465b83c0120a941257842370ccf6b094bc577bf8e166ba2bddfbc53ad86b4db05114c8470fa4c80727a5c669ea8666450fbd3c4ee829Fc9oTARbt23Ic2udQEMkTTSJTcobPb2tzSqiLUEsiy10naN1oAAVvD7kVx2KXJvLD10LNKCzbi1uOiBqvNl/bnvpNXaKUlxEeA3AnyD8omD/OUVioaK5ry7Z2PBTcWRBTA0o+gu7DS09g0NAT7WJQ==',
+            encryptedMsg = '4659a470190a1e69c62a4aa3d134290009461ff5a3662d6f9452b353c6bdaac4619397485b2e08b730705102319391186ddfdb36c48d47004d91a51ebdaa9927cKWfr1XL0gMOjKMrGpGL4NlsJukxp2NACVwEzpDKRYy3L4n+ooiiCPpJKu/vrOfqQpxKh5j0/139f3tybQEFpwuqkdu8tRO5BqinBQaKXaUurz6pINyieKADmFWAiYyvoOP2rzIUI0TtouF37aWAOapLZ7Xaff7/EQ/H82eu5DMf/rTEZgAXGIYen9zZSjmAvBXpwQoWV7hTd8rzkkiU2eVfQgQvl5vcmsZRgHjt6vgWHGhHzs3Fndjml94s9enjVvx3PhdJgvj5VvY07AZF9wlXGRcS9Y4Wiv/witGFmZdFGlFxreczGyaFYzAbZffijmQmUXsykcLcrvuOrQG2Ah2l4752yQrJGkkaiitbFebvFqY9FxXyTk0zsxEf1WfEATEDsfmyLeuF5o+YRqamPxBLN5+0fRNcqdjI9QY7eGv7RNi8Qtp14EAWYmv03BczX4yQt4D7Frrop5IkWjGxJpQWeQUqoJhyEmTVZ8ONHJAp4z3mDplIOZtc5goEWvG0VRqTgqqWy+gXupaPgn6cyhVcQc4nbBjAH7YRFtOxVAXagVSNDMx8t+XlmT5KhqTcvn0wqWu2zJvcup5AbnH6k7Cnqj+o8rePYuDVZ5RpJZM/6Pp3BVPsNmiOCQfTxX+HW59JeZhZK8zF2pf4uPmE44czFs3mUh7IzTIlNcSjmha60wKKR1r/yGE7rv8LjNZLkwFsmYQJkDz11PL7lxBlbxjVJqwYDRngWapyhj1grQSu/89D76zOc4xElhoTui+YunnJjp1yaIIHNny80iI98x2xem7pl0rns+JdSGhQmW1h6OxclYxbLZILyXz9C9VTz1cJ+Vi6oWlQ6bIRJg4bl+9VepoOTsuDalMAaRuFstSVH5fBSd5AuIwIDFZuQLAzwlfkx/7Q4Hg44d/L1YN1Ul5iEW9LsWimZrr7/9FKLDW6aUOae4nCqcuaRa+PejMIWCQgjyUCOX1+HcEvPBAtPSoYK5AY34OYCc6lZYq8pdwv/LSG25IWARs287tHfWvjwgxoOYiaP2paPcKp59LiH+wsjg/jOi5X2pyUDsntZRyNf7MTOBTfZE+i60yxhL1d',
             encryptedHMAC = encryptedMsg.substring(0, 64),
             encryptedHTML = encryptedMsg.substring(64),
             decryptedHMAC = CryptoJS.HmacSHA256(encryptedHTML, CryptoJS.SHA256(passphrase).toString()).toString();
