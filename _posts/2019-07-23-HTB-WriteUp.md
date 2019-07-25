@@ -68,14 +68,13 @@ Let's see where else we could use it. Maybe that open ssh port?
 
 Success
 
-![WriteUp Exploit DB]({{"/images/WriteUp-Search.png" | https://v0lch0k.github.io/images/WriteUp-Search.png }})
-
 Looks like we can grab the user flag from the home directory.
 
-```
-user.txt
-d4e493fd4068afc9eb1aa6a55319f978
-```
+![WriteUp User Login]({{"/images/WriteUp-User.png" | https://v0lch0k.github.io/images/WriteUp-User.png }})
+
+
+
+
 
 Now let's see how what we can use for privesc.
 
