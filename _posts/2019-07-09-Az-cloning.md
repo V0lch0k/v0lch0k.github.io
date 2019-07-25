@@ -269,4 +269,6 @@ Write-Host ('Found ' + $dataDiskCount  + ' data disks') -ForegroundColor Green
 # Conclusion
 Once this has completed we have an exact copy of the original resource group. This script was specifically catered for a client, only the resources that mattered for the environment where cloned.
 
+We can make this better by using workflows to parallelize the process of creating VMs and attaching data disks. I'll continue this once I make the necessary changes to my local scripts.
+
 For extra resources these scripts can be modified to also clone items such as firewalls, storage accounts etc...
